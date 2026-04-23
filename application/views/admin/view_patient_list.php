@@ -1,97 +1,90 @@
-
-<!-- =============================================== -->
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
         <div class="header-icon">
-            <i class="pe-7s-world"></i>
+            <i class="pe-7s-users"></i>
         </div>
         <div class="header-title">
-            <h1><?php echo display('patient_list');?></h1>
-            <small><?php echo display('patient_list');?></small>
-            
+            <h1>Lista de Pacientes</h1>
+            <small>Gestión y búsqueda de pacientes registrados</small>
+            <ol class="breadcrumb">
+                <li><a href="<?php echo base_url('admin/Dashboard')?>"><i class="pe-7s-home"></i> Inicio</a></li>
+                <li class="active">Lista de Pacientes</li>
+            </ol>
         </div>
     </section>
 
-    <!-- Main content -->
-    
-    <div class="row">
-        <!--  table area -->
-        <div class="col-sm-12">
-            <section class="content">
-    <?php 
-        echo @$msg = $this->session->flashdata('message'); 
-     ?>
-            <div  class="panel panel-bd">
-
-                <div class="panel-heading no-print">
-                    <div class="btn-group"> 
-                        <h4><?php echo display('patient_list');?></h4>
+    <section class="content">
+        <div class="row">
+            <div class="col-sm-12">
+               <div class="panel panel-bd">
+                    <div class="panel-heading">
+                        <div class="btn-group"> 
+                            <a class="btn btn-success" href="<?php echo base_url('admin/Patient_controller')?>"> 
+                                <i class="fa fa-plus"></i> Nuevo Paciente 
+                            </a>  
+                        </div>
                     </div>
-                </div> 
-                <div class="panel-body">
-                    <table width="100%" class="table table-striped table-bordered table-hover" id="patient_list">
-                        <thead>
-                            <tr>
-                                <th><?php echo display('picture');?></th>
-                                <th><?php echo display('patient_id');?></th>
-                                <th>Name(Family & Given)</th>
-                                <th><?php echo display('phone_number');?></th>
-                                <th><?php echo display('birth_date');?></th>
-                                <th class="none" ><?php echo display('address');?></th>
-                                <th class="none"><?php echo display('blood_group');?></th>
-                                <th class="none"><?php echo display('sex');?></th>
-                                <th><?php echo display('action');?></th> 
-                            </tr>
-                        </thead>
-                        <tbody>
-                           <?php
-                                foreach ($patient_info as $value) {
-                            ?>
-                            <tr class="odd gradeX">
-                                <td>
-                                    <div class="profile-userpic">
-                                        <?php 
-                                           if($value->picture){
-                                            echo '<img width="50" src="'.$value->picture.'" class="img-responsive">';
-                                           }else{
-                                            echo '<img width="50" src="'.base_url().'assets/images/patient.png" class="img-responsive" >';
-                                           }
-                                        ?>
-                                    </div>
-                                </td>
-                                <td><?php echo $value->patient_id; ?></td>
-                                <td><?php echo @$value->family_name .' '. @$value->given_name ;?></td>
-                                <td><?php echo $value->patient_phone;?></td>
-                                <td><?php echo $value->birth_date;?></td>
-                                <td><?php echo $value->address;?></td>
-                                <td><?php echo $value->blood_group;?></td>
-                                <td><?php echo $value->sex;?></td>
-                                <td class="">
-                                    <a  class="btn btn-xs btn-info" href="<?php echo base_url();?>admin/Patient_controller/patient_edit/<?php echo $value->patient_id;?>">
-                                    <i class="fa fa-edit"></i> </a>
-                                    <a  class="btn btn-xs btn-success" href="<?php echo base_url();?>admin/Patient_controller/patient_info/<?php echo $value->patient_id ;?>" > <i class="fa fa-eye"></i> </a>
-                                    <a  class="btn btn-xs btn-danger" href="<?php echo base_url();?>admin/Patient_controller/delete_patient/<?php echo $value->patient_id ;?>" onclick="return confirm('Are you want to delelte?');">
-                                    <i class="fa fa-trash"></i> </a>
-                                </td> 
-                            </tr>
-                            <?php
-                                }
-                            ?>
-                        </tbody>
-                    </table> 
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table id="patientTable" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr style="background-color: #f4f7fa;">
+                                        <th class="text-center">Foto</th>
+                                        <th>Cédula</th>
+                                        <th>Nombre Completo</th>
+                                        <th class="text-center">Sexo</th>
+                                        <th class="text-center">Edad</th>
+                                        <th>Teléfono</th>
+                                        <th>Dirección</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   <?php if (!empty($patient_list)) { ?>
+                                       <?php foreach ($patient_list as $value) { ?>
+                                        <tr>
+                                            <td class="text-center">
+                                                <?php if(!empty($value->picture)){ ?>
+                                                    <img src="<?php echo base_url().$value->picture; ?>" class="img-circle" width="40" height="40" style="border: 1px solid #ddd;">
+                                                <?php } else { ?>
+                                                    <img src="<?php echo base_url('assets/images/patient.png'); ?>" class="img-circle" width="40" height="40">
+                                                <?php } ?>
+                                            </td>
+                                            <td><b><?php echo $value->patient_id; ?></b></td>
+                                            <td><?php echo $value->given_name; ?></td>
+                                            <td class="text-center">
+                                                <?php echo ($value->sex == 'Male') ? '<span class="label label-info">M</span>' : '<span class="label label-warning" style="background-color: #f39c12;">F</span>'; ?>
+                                            </td>
+                                            <td class="text-center"><?php echo $value->age; ?> años</td>
+                                            <td><?php echo $value->phone; ?></td>
+                                            <td><small><?php echo substr($value->address, 0, 30); ?><?php echo (strlen($value->address) > 30) ? '...' : ''; ?></small></td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="<?php echo base_url("admin/Patient_controller/patient_info/$value->patient_id") ?>" class="btn btn-primary btn-xs" title="Ver Perfil"><i class="fa fa-eye"></i></a>
+                                                    <a href="<?php echo base_url("admin/Patient_controller/edit_patient/$value->patient_id") ?>" class="btn btn-info btn-xs" title="Editar"><i class="fa fa-edit"></i></a>
+                                                    <a href="<?php echo base_url("admin/Patient_controller/delete_patient/$value->patient_id") ?>" class="btn btn-danger btn-xs" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar este paciente?')"><i class="fa fa-trash"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>            
     </section>
 </div>
 
-<?php
-     $printTitle = "Patient List";
-     $this->session->set_flashdata(array('pTitle' => $printTitle));    
-?>  
-
-
-
+<script>
+    $(document).ready(function() {
+        $('#patientTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+            },
+            "order": [[ 2, "asc" ]] // Ordenar por nombre por defecto
+        });
+    });
+</script>
